@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Deutschland-Api Javascript Api</title>
+		<script type="text/javascript" src="dapi.js"></script>
+		<script type='text/javascript'>
+			if( window.console == undefined || window.console.firebug == undefined ) {
+				document.write("<scr"+"ipt type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'><"+"/script>");
+			}
+		</script>
+	</head>	
+	<body>
+		<div id="doc"> </div>
+		<script language="javascript">
+			try{ firebug.env.height = 500; } catch(err){}
+			
+			function line( str, log, i ){
+				var q = "",str=str||"",i=i||200,i=i-str.length,z,z1=Math.round(i/2);
+				for( z=0;z<i;z++)
+					if( i-z == z1 ) q += str;
+					else q += "*";
+				console.log( q );
+				if( undefined !== log )
+					console.log( log );
+				return line
+			}
+			
+			
+			
+			EXAMPLE_CODE = 'var D_Api = new dapi;\n'+
+			"D_Api.call( '/', function( response ){\n"+
+			"	line('/', response );\n"+
+			"} );\n"+
+			"\n"+
+			"D_Api.call( 'bundestag.ausschuesse/get', function( response ){\n"+
+			"	line(' bundestag.ausschuesse/get?limit=1 ', response );\n"+
+			"}, { \"limit\": 1 } );\n"+
+			"\n"+
+			"D_Api.call( 'bundestag.ausschuesse/list', function( response ){\n"+
+			"	line(' bundestag.ausschuesse/list?limit=10 ', response );\n"+
+			"}, { \"limit\": 10 } );\n";
+			
+			line(' EXAMPLE-CODE ', EXAMPLE_CODE );
+			eval( EXAMPLE_CODE );
+		</script>
+	</body>
+</html>
