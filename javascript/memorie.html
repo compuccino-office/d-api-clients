@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de" dir="ltr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Deutschland-Api Politiker Memorie</title>
+		<script type="text/javascript" src="dapi.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+		<style type="text/css">
+			body {
+				background: rgba( 0,0,0,0.7 );
+				color: rgba( 255,255,255,0.9 );
+				font: 12px;
+			}
+			#canvas {
+				display: block;
+				position: relative;
+			}
+			#canvas:after {
+				display: block;
+				content: '.';
+				visibility: hidden;
+				clear: both;
+			}
+			#canvas li {
+				text-align: center;
+				width: 185px;
+				height: 320px;
+				background: rgba( 255,255,255,0.9 );;
+				float: left;
+				list-style: none;
+				position: relative;
+				overflow: hidden;
+				padding: 0.1em;
+				border: 1px solid #ddd;
+			}
+			#canvas li .source, #canvas li .desc {
+				padding: 0.2em 0.2em;
+				font-size: 0.8em;
+				color: rgba( 140,140,140,0.9 );
+				position: relative;
+				line-height: 1em;
+			}
+			
+			#canvas li * {
+				display: none;
+			}
+			
+			#canvas li.active *, #canvas li.done * {
+				display: block;
+			}
+			
+			#log {
+				position: fixed;
+				top: 0;
+				height: 100%;
+				width: 100%;
+				background: rgba( 0,0,0,0.5 );
+				color: rgba( 255,255,255,0.99 );
+				/*display: none;*/
+				text-align: center;
+			}
+			
+			#log .msg {
+				position: relative;
+				top: 20%;
+				font-size: 160%;
+			}
+			
+			#start {
+				cursor: pointer;
+			}
+		</style>
+	</head>	
+	<body>
+		<div id="doc">
+			<div id="bar">
+				<label>Karten: <input type="text" id="settings-limit" value="12" /></label>
+				<label>Partei: <input type="text" id="settings-partei" value="" /></label>
+				<div id="start">Beginne neues Spiel.</div>
+			</div>
+			<div id="canvas">
+				
+			</div>
+			<div id="log"><div class="msg"></div></div>
+		</div>
+		<script language="javascript">
+			function line( str, log, i ){
+				var q = "",str=str||"",i=i||150,i=i-str.length,z,z1=Math.round(i/2);
+				for( z=0;z<i;z++)
+					if( i-z == z1 ) q += str;
+					else q += "*";
+				try {
+					console.log( q );
+					if( undefined !== log )
+						console.log( log );
+				} catch( err ) {
+					
+				}
+				return line
+			}
+			
+		</script>
+		<script id="example-code" type="text/javascript">
+		function log( msg ) {
+			$('#log').stop().css({
+				'display': 'block'
+			}).fadeIn( 1000 ).find('.msg').html(msg);
+		}
+		function unlog(){
+			$('#log').stop().fadeOut( 1000, function(){
+				$('#log').css( {'display':'none'} )
+			} );
+		}
+		function __init__ ( params, limit ) {
+			params = params || {};
+			limit = limit || 4;
+			// Initialisiere
+			var D_Api = new dapi,
+				Canvas = $('#canvas'),
+				currentFrameIndex = 0,
+				frames=[];
+			
+			function shuffle ( arr ) {
+				var tmp, rand, i, l=arr.length;
+				for(i =0; i < l; i++){
+					rand = Math.floor(Math.random() * arr.length);
+					tmp = arr[i]; 
+					arr[i] = arr[rand]; 
+					arr[rand] = tmp;
+				}
+				return arr;
+			}
+			
+			function start ( ) {
+				log( 'Lade neues Spiel.');
+				var i,l=frames.length, html=[],steps=0,currentStep=[],lock=false,lastTimeout;
+				for( i=0;i<l;i++ ){
+					if( frames[i]['bundestag_image'].length > 5 )
+						html.push( "<li data='"+frames[i]['id']+"'><div class='desc'>"+
+						frames[i]['zusatz'] + " " + frames[i]['vorname'] + ", " + frames[i]['nachname'] +
+						" ("+frames[i]['partei']+")"+
+						"</div><img src='"+frames[i]['bundestag_image']+"' /><div class='source'>"+frames[i]['bundestag_image_source']+"</div></li>" );
+				}
+				UL = $("<ul>"+html.join("")+"</ul>").appendTo( Canvas.empty() )
+				UL.find( 'li' ).click( function(){
+					if( lock ) {
+						window.clearTimeout( lastTimeout );
+						currentStep = [];
+						UL.find( 'li.active' ).removeClass('active');
+						lock=false;
+						return;
+					}
+					lock = true;
+					var that = $(this).addClass('active');
+					if( that.hasClass('done') ){
+						lock=false;
+						return;
+					}
+					currentStep.push(that);
+					if( currentStep.length > 1 ) {
+						steps++;
+						if( currentStep[0].attr('data') == that.attr('data') ) {
+							currentStep[0].addClass('done');
+							that.addClass('done');
+							UL.find( 'li.active' ).removeClass('active');
+							currentStep = [];
+							lock = false;
+							if( UL.find( 'li.done' ).size() == frames.length ) {
+								log( 'Spiel wurde erfolgreich in '+steps+' Schritten beendet.');
+							}
+						} else {
+							lastTimeout = window.setTimeout( function(){
+								currentStep = [];
+								UL.find( 'li.active' ).removeClass('active');
+								lock=false;
+							}, 1000 );
+						}
+					} else {
+						currentStep.push( that );
+						lock = false;
+					}	
+				} );
+				unlog();
+			}
+			
+			// Liste aller Controller
+			D_Api.call( 'bundestag.mdb.politiker/get', function( response ){
+				if( response.code == 200 ) {
+					frames = response.data;
+					var i,l=frames.length;
+					for( i=0;i<l;i++ ){
+						frames.push( frames[i] );
+					}
+					frames = shuffle( shuffle( frames ) );
+					start();
+				} else {
+					log( 'Spiel-Daten konnten nicht geladen werden.');
+				}
+				//line('/', response );
+			}, $.extend({
+				'wahlperiode': 17,
+				'limit': limit+","+Math.round( Math.random( 0, 500 ) * 500 )
+			}, params ) );
+		}
+		
+		function getSettings(){
+			var d = {};
+			if( $('#settings-partei').val().length > 2 )
+				d['partei'] = $('#settings-partei').val();
+			if( String( $('#settings-wahlperiode').val() ).length > 1)
+				d['wahlperiode'] = $('#settings-wahlperiode').val();
+			return d;
+		}
+
+		$('#start,#log').click( function(){
+			__init__( getSettings(), Math.round( parseInt( $('#settings-limit').val() ) / 2 ) );
+		} );
+		__init__( getSettings(), Math.round( parseInt( $('#settings-limit').val() ) / 2 ) );
+		var lastTimeout = null;
+		
+		$('#settings-limit').keyup( function(){
+			window.clearTimeout(lastTimeout);
+			var self = this;
+			lastTimeout = window.setTimeout( function(){
+				if( parseInt( self.value ) == NaN || parseInt( self.value ) < 2 ) {
+					self.value = "12";
+				}
+			}, 500 );
+		} );
+		</script>
+		<script type="text/javascript">
+			EXAMPLE_CODE = document.getElementById('example-code');
+			line( "EXAMPLE_CODE: ", EXAMPLE_CODE.innerHTML );
+			
+			
+		</script>
+	</body>
+</html>
