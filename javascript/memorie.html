@@ -26,7 +26,7 @@
 				text-align: center;
 				width: 185px;
 				height: 320px;
-				background: rgba( 255,255,255,0.9 );;
+				background: url( './compuccino_pattern_bg.jpg' ) repeat;/*rgba( 255,255,255,0.9 );*/
 				float: left;
 				list-style: none;
 				position: relative;
@@ -34,22 +34,26 @@
 				padding: 0.1em;
 				border: 1px solid #ddd;
 				margin: 0.2em;
+				-moz-user-select: none;
 			}
 			#canvas li .source, #canvas li .desc {
 				padding: 0.2em 0.2em;
-				font-size: 0.8em;
-				color: rgba( 140,140,140,0.9 );
+				font-size: 0.9em;
+				color: #111;
 				position: relative;
 				line-height: 1em;
 			}
-			
-			#canvas li * {
-				display: none;
+			#canvas li.active .outer {
+				background: rgba( 255,255,255,0.6 );
+				height: 318px;
 			}
-			
-			#canvas li.active *, #canvas li.done * {
-				display: block;
+			#canvas li.done .outer {
+				background: rgba( 150,150,150,0.9 );
+				height: 318px;
 			}
+			#canvas li * { display: none; }
+			#canvas li img { margin-left: 0.35em }
+			#canvas li.active *, #canvas li.done * { display: block; }
 			
 			#log {
 				position: fixed;
@@ -181,10 +185,10 @@
 				var i,l=frames.length, html=[],steps=0,currentStep=[],lock=false,lastTimeout;
 				for( i=0;i<l;i++ ){
 					if( frames[i]['bundestag_image'].length > 5 ) {
-						html.push( "<li data='"+frames[i]['id']+"' style='display: none;'><div class='desc'>"+
+						html.push( "<li data='"+frames[i]['id']+"' id='data-"+i+"' style='display: none;'><div class='outer'><div class='desc'>"+
 						frames[i]['zusatz'] + " " + frames[i]['vorname'] + ", " + frames[i]['nachname'] +
 						" ("+frames[i]['partei']+")"+
-						"</div><img src='"+frames[i]['bundestag_image']+"' /><div class='source'>"+frames[i]['bundestag_image_source']+"</div></li>" );
+						"</div><img src='"+frames[i]['bundestag_image']+"' /><div class='source'>"+frames[i]['bundestag_image_source']+"</div></div></li>" );
 						if ( i % InONeRow == 1 ) Rows++
 					}
 				}
@@ -194,22 +198,30 @@
 				UL.css( 'width', ( Math.floor( l / Rows ) + 1 ) * 185 + "px" );
 				UL.find( 'li' ).css('display','block').click( function(){
 					if( lock ) {
-						window.clearTimeout( lastTimeout );
 						currentStep = [];
+						window.clearTimeout( lastTimeout );
 						UL.find( 'li.active' ).removeClass('active');
 						lock=false;
 						return;
 					}
 					lock = true;
-					var that = $(this).addClass('active');
+					var that = $(this);
 					if( that.hasClass('done') ){
+						UL.find( 'li.active' ).removeClass('active');
+						currentStep = [];
 						lock=false;
 						return;
+					} else that.addClass('active');
+					if( currentStep.length > 0 ) {
+						if( currentStep[0].attr('id') == that.attr('id') ) {
+							lock = false;
+							return;
+						}
 					}
 					currentStep.push(that);
 					if( currentStep.length > 1 ) {
 						steps++;
-						if( currentStep[0].attr('data') == that.attr('data') ) {
+						if( currentStep[0].attr('data') == that.attr('data') && currentStep[0].attr('id') != that.attr('id') ) {
 							currentStep[0].addClass('done');
 							that.addClass('done');
 							UL.find( 'li.active' ).removeClass('active');
