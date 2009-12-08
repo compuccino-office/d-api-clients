@@ -69,6 +69,12 @@
 			#start {
 				cursor: pointer;
 			}
+			body  { font: 13px/1.231 arial,helvetica,clean,sans-serif; }
+			a {
+				color: #0088CC;
+				text-decoration: none;
+			}
+			a:hover, a:active, a:focus { color: #006FA6; }
 		</style>
 	</head>	
 	<body>
@@ -76,12 +82,14 @@
 			<div id="bar">
 				<label>Karten: <input type="text" id="settings-limit" value="12" /></label>
 				<label>Partei: <input type="text" id="settings-partei" value="" /></label>
+				<label>Wahlperiode: <select id="settings-wahlperiode"><option value="">Alle</option><option value="16">16.</option><option value="17">17.</option></select></label>
 				<div id="start">Beginne neues Spiel.</div>
 			</div>
 			<div id="canvas">
 				
 			</div>
 			<div id="log"><div class="msg"></div></div>
+			<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de/Api">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/api-console">http://wiki.d-api.de/api-console</a>.</p>
 		</div>
 		<script language="javascript">
 			function line( str, log, i ){
@@ -111,6 +119,12 @@
 				$('#log').css( {'display':'none'} )
 			} );
 		}
+		
+		function randomer( _min, _max ) {
+			if( _min == _max ) return _min;
+			return _min + parseInt( Math.random() * ( _max-_min+1 ) );
+		}
+		
 		function __init__ ( params, limit ) {
 			params = params || {};
 			limit = limit || 4;
@@ -182,25 +196,44 @@
 				} );
 				unlog();
 			}
-			
-			// Liste aller Controller
-			D_Api.call( 'bundestag.mdb.politiker/get', function( response ){
-				if( response.code == 200 ) {
-					frames = response.data;
-					var i,l=frames.length;
-					for( i=0;i<l;i++ ){
-						frames.push( frames[i] );
+			if( limit > 10 ) {
+				D_Api.multicall( 'bundestag.mdb.politiker/get', function( response ){
+					if( response.code == 200 ) {
+						frames = response.data;
+						var i,l=frames.length;
+						for( i=0;i<l;i++ ){
+							frames.push( frames[i] );
+						}
+						frames = shuffle( shuffle( frames ) );
+						start();
+					} else {
+						log( 'Spiel-Daten konnten nicht geladen werden.');
 					}
-					frames = shuffle( shuffle( frames ) );
-					start();
-				} else {
-					log( 'Spiel-Daten konnten nicht geladen werden.');
-				}
-				//line('/', response );
-			}, $.extend({
-				'wahlperiode': 17,
-				'limit': limit+","+Math.round( Math.random( 0, 500 ) * 500 )
-			}, params ) );
+					//line('/', response );
+				}, $.extend({
+					'wahlperiode': 17,
+					'limit': String( randomer( 1, 500 ) ) + "," + limit
+				}, params ) );
+			} else {
+				D_Api.call( 'bundestag.mdb.politiker/get', function( response ){
+					if( response.code == 200 ) {
+						frames = response.data;
+						var i,l=frames.length;
+						for( i=0;i<l;i++ ){
+							frames.push( frames[i] );
+						}
+						frames = shuffle( shuffle( frames ) );
+						start();
+					} else {
+						log( 'Spiel-Daten konnten nicht geladen werden.');
+					}
+					//line('/', response );
+				}, $.extend({
+					'wahlperiode': 17,
+					'limit': String( randomer( 1, 500 ) ) + "," + limit
+				}, params ) );
+			}
+			
 		}
 		
 		function getSettings(){
@@ -227,10 +260,11 @@
 				}
 			}, 500 );
 		} );
+		
 		</script>
 		<script type="text/javascript">
-			EXAMPLE_CODE = document.getElementById('example-code');
-			line( "EXAMPLE_CODE: ", EXAMPLE_CODE.innerHTML );
+			//EXAMPLE_CODE = document.getElementById('example-code');
+			//line( "EXAMPLE_CODE: ", EXAMPLE_CODE.innerHTML );
 			
 			
 		</script>

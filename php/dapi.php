@@ -1,7 +1,7 @@
 <?php
 /**
  * Client Class for d-api.de
- * Siehe http://wiki.d-api.de/Api
+ * Siehe http://wiki.d-api.de/Api, http://wiki.d-api.de/api-console
  * 
  * @package    Utilities d-api
  * @license    
@@ -111,8 +111,8 @@ function line( $title, $log = null ) {
 function test() {
 	$dapi = new DApi;
 	line( "YQL - Examples" );
-	line( 'SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1', $dapi->yql( "SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1" ) );
-	line( 'SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4', $dapi->yql( "SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4" ) );
+	line( 'SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1', $dapi->yql( "SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1" ) );
+	line( 'SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4', $dapi->yql( "SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4" ) );
 	
 	line( "API - Examples" );
 	line( '/', $dapi->call( "/" ) );

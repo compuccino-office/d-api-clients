@@ -10,7 +10,7 @@ from urllib import urlopen, urlencode
 	d-api Python Client
 	
 	Ein Client Handler für v1.d-api.de
-	Wiki: http://wiki.d-api.de/Api
+	Siehe http://wiki.d-api.de/Api, http://wiki.d-api.de/api-console
 	
 	@package    Utilities d-api
 	@license    
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 	print " YQL-Examples ".center(200,"*")
 	print "".center(200,"*")
 	print ""
-	print " SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1 ".center(200,"*")
-	pprint( dapi.yql('SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1' ) )
-	print " SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4 ".center(200,"*")
-	pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4' ) )
+	print " SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1 ".center(200,"*")
+	pprint( dapi.yql('SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1' ) )
+	print " SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4 ".center(200,"*")
+	pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4' ) )

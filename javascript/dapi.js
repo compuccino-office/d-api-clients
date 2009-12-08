@@ -1,6 +1,6 @@
 /**
  * Client Class for d-api.de
- * Siehe http://wiki.d-api.de/Api
+ * Siehe http://wiki.d-api.de/Api, http://wiki.d-api.de/api-console
  * 
  * @package    Utilities d-api
  * @license    
@@ -59,6 +59,32 @@ dapi.prototype.call = function( method, cb, params ) {
 	c.onerror = params['callback'];
 	c.src = this.urlize( method, params );
 	document.body.appendChild( c );
+	return this;
+}
+/**
+ * nulticall call a method with pagination 
+ */
+dapi.prototype.multicall = function ( method, cb, params, perPage ) {
+	perPage = perPage || 10;
+	params = params || {};
+	var limits = String( params['limit'] ).split(','),
+	start = parseInt( limits[0] ),sites=Math.ceil( limits[1]/perPage ),i,self=this,data=[];
+	for( i=0; i < sites; i++ ){
+		(function(i){
+			params.limit = (start + i*perPage) + "," + perPage;
+			self.call( method, function( response ){
+				if( response.data ) {
+					$.each( response.data, function( i, dat ) {
+						data.push( dat );
+					} );
+				}
+				response.data = data;
+				if( i >= sites-1 ) {
+					cb( response );
+				}
+			}, params );
+		})(i);
+	}
 	return this;
 }
 
