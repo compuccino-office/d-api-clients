@@ -5,11 +5,12 @@
 		<title>Deutschland-Api Politiker Memorie</title>
 		<script type="text/javascript" src="dapi.js"></script>
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://wiki.d-api.de/api-console/reset.css">
+		<link rel="stylesheet" type="text/css" href="http://wiki.d-api.de/api-console/dapi.css">
 		<style type="text/css">
-			body {
+			html {
 				background: rgba( 0,0,0,0.7 );
 				color: rgba( 255,255,255,0.9 );
-				font: 12px;
 			}
 			#canvas {
 				display: block;
@@ -32,6 +33,7 @@
 				overflow: hidden;
 				padding: 0.1em;
 				border: 1px solid #ddd;
+				margin: 0.2em;
 			}
 			#canvas li .source, #canvas li .desc {
 				padding: 0.2em 0.2em;
@@ -56,40 +58,61 @@
 				width: 100%;
 				background: rgba( 0,0,0,0.5 );
 				color: rgba( 255,255,255,0.99 );
-				/*display: none;*/
 				text-align: center;
+				z-Index: 10000;
 			}
 			
 			#log .msg {
 				position: relative;
-				top: 20%;
-				font-size: 160%;
+				top: 30%;
+				font-size: 180%;
+				width: 45%;
+				background: rgba( 0,0,0,0.5 );
+				margin-left: 25%;
+				padding: 3em 0;
 			}
 			
+			#hd { margin-top: 0.5em; }
+			#hd h1 { padding-bottom: 0.5em; }
+			#hd label { display: block; padding: 0.2em 0;}
 			#start {
 				cursor: pointer;
-			}
-			body  { font: 13px/1.231 arial,helvetica,clean,sans-serif; }
-			a {
+				padding: 0.2em 0.3em;
+				border: 1px solid #ddd;
+				font-size: 110%;
+				font-weight: bold;
+				margin: 0.5em 0;
 				color: #0088CC;
-				text-decoration: none;
 			}
-			a:hover, a:active, a:focus { color: #006FA6; }
+			#start:hover { color: #006FA6; }
+			#settings-limit { margin-left: 0.4em; }
+			#settings-partei {margin-left: 0.6em;}
 		</style>
 	</head>	
 	<body>
-		<div id="doc">
-			<div id="bar">
-				<label>Karten: <input type="text" id="settings-limit" value="12" /></label>
-				<label>Partei: <input type="text" id="settings-partei" value="" /></label>
-				<label>Wahlperiode: <select id="settings-wahlperiode"><option value="">Alle</option><option value="16">16.</option><option value="17">17.</option></select></label>
-				<div id="start">Beginne neues Spiel.</div>
-			</div>
-			<div id="canvas">
+		<div id="log"><div class="msg"></div></div>
+		<div id="doc" class="yui-t6">
+			<div id="hd">
+				<h1><a href="http://wiki.d-api.de/api-console"><img src="http://wiki.d-api.de/api-console/deutschlandapi-logo.png" alt="Deutschland-Api Konsole" title="Deutschland-Api Konsole" /></a> Politiker Memorie</h1>
+				<div id="bar">
+					<label>Karten: <input type="text" id="settings-limit" value="12" /></label>
+					<label>Partei: <input type="text" id="settings-partei" value="" /></label>
+					<label>Wahlperiode: <select id="settings-wahlperiode"><option value="">Alle</option><option value="16">16.</option><option value="17">17.</option></select></label>
+					<button id="start">Beginne neues Spiel.</button>
+				</div>
 				
 			</div>
-			<div id="log"><div class="msg"></div></div>
-			<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de/Api">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/api-console">http://wiki.d-api.de/api-console</a>.</p>
+			<div id="bd">
+				<div id="canvas">
+				</div>
+			</div>
+			<div id="ft">
+				<p style="float:right">
+				<a title="compuccino Roggenkamp & Cserny GbR" href="http://compuccino.com" target="_blank"><img width="154" height="24" alt="Compuccino" src="http://compuccino.com/sites/default/themes/compuccino/img/logo.png"/></a>
+				</p>
+				<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de/Api">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/api-console">http://wiki.d-api.de/api-console</a>.</p>
+			</div>
+			
 		</div>
 		<script language="javascript">
 			function line( str, log, i ){
@@ -111,18 +134,30 @@
 		<script id="example-code" type="text/javascript">
 		function log( msg ) {
 			$('#log').stop().css({
-				'display': 'block'
+				'display': 'block',
+				'opacity':1
 			}).fadeIn( 1000 ).find('.msg').html(msg);
 		}
 		function unlog(){
 			$('#log').stop().fadeOut( 1000, function(){
-				$('#log').css( {'display':'none'} )
+				$('#log').css( {'display':'none','opacity':0} )
 			} );
 		}
 		
 		function randomer( _min, _max ) {
 			if( _min == _max ) return _min;
 			return _min + parseInt( Math.random() * ( _max-_min+1 ) );
+		}
+		
+		function shuffle ( arr ) {
+			var tmp, rand, i, l=arr.length;
+			for(i =0; i < l; i++){
+				rand = Math.floor( Math.random() * arr.length );
+				tmp = arr[i]; 
+				arr[i] = arr[rand]; 
+				arr[rand] = tmp;
+			}
+			return arr;
 		}
 		
 		function __init__ ( params, limit ) {
@@ -134,29 +169,30 @@
 				currentFrameIndex = 0,
 				frames=[];
 			
-			function shuffle ( arr ) {
-				var tmp, rand, i, l=arr.length;
-				for(i =0; i < l; i++){
-					rand = Math.floor(Math.random() * arr.length);
-					tmp = arr[i]; 
-					arr[i] = arr[rand]; 
-					arr[rand] = tmp;
-				}
-				return arr;
-			}
+			log( 'Spiel-Daten werden geladen ..');
 			
 			function start ( ) {
-				log( 'Lade neues Spiel.');
+				log( 'Starte neues Spiel.');
+				Canvas.css( 'width', '100%' );
+				var mWidth = Canvas.width();
+				var Rows = 0;
+				var InONeRow = Math.floor( mWidth / 185 );
+				
 				var i,l=frames.length, html=[],steps=0,currentStep=[],lock=false,lastTimeout;
 				for( i=0;i<l;i++ ){
-					if( frames[i]['bundestag_image'].length > 5 )
-						html.push( "<li data='"+frames[i]['id']+"'><div class='desc'>"+
+					if( frames[i]['bundestag_image'].length > 5 ) {
+						html.push( "<li data='"+frames[i]['id']+"' style='display: none;'><div class='desc'>"+
 						frames[i]['zusatz'] + " " + frames[i]['vorname'] + ", " + frames[i]['nachname'] +
 						" ("+frames[i]['partei']+")"+
 						"</div><img src='"+frames[i]['bundestag_image']+"' /><div class='source'>"+frames[i]['bundestag_image_source']+"</div></li>" );
+						if ( i % InONeRow == 1 ) Rows++
+					}
 				}
+				
+				
 				UL = $("<ul>"+html.join("")+"</ul>").appendTo( Canvas.empty() )
-				UL.find( 'li' ).click( function(){
+				UL.css( 'width', ( Math.floor( l / Rows ) + 1 ) * 185 + "px" );
+				UL.find( 'li' ).css('display','block').click( function(){
 					if( lock ) {
 						window.clearTimeout( lastTimeout );
 						currentStep = [];
@@ -204,7 +240,7 @@
 						for( i=0;i<l;i++ ){
 							frames.push( frames[i] );
 						}
-						frames = shuffle( shuffle( frames ) );
+						frames = shuffle( frames );
 						start();
 					} else {
 						log( 'Spiel-Daten konnten nicht geladen werden.');
@@ -222,7 +258,7 @@
 						for( i=0;i<l;i++ ){
 							frames.push( frames[i] );
 						}
-						frames = shuffle( shuffle( frames ) );
+						frames = shuffle( frames );
 						start();
 					} else {
 						log( 'Spiel-Daten konnten nicht geladen werden.');

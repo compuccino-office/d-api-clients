@@ -9,19 +9,23 @@
 				document.write("<scr"+"ipt type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'><"+"/script>");
 			}
 		</script>
-		<style type="text/css">
-		body  { font: 13px/1.231 arial,helvetica,clean,sans-serif; }
-		a {
-			color: #0088CC;
-			text-decoration: none;
-		}
-		a:hover, a:active, a:focus { color: #006FA6; }
-		</style>
+		<link rel="stylesheet" type="text/css" href="http://wiki.d-api.de/api-console/reset.css">
+		<link rel="stylesheet" type="text/css" href="http://wiki.d-api.de/api-console/dapi.css">
 	</head>	
 	<body>
-		<div id="doc">
-			<p>Diese Seite ist für FF3 und Firebug angepasst, für alle anderen wird firebug-lite geladen.</p>
-			<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de/Api">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/api-console">http://wiki.d-api.de/api-console</a>.</p>
+		<div id="doc" class="yui-t6">
+			<div id="hd">
+				<h1><a href="http://wiki.d-api.de/api-console"><img src="http://wiki.d-api.de/api-console/deutschlandapi-logo.png" alt="Deutschland-Api Konsole" title="Deutschland-Api Konsole" /></a></h1>
+			</div>
+			<div id="bd">
+				<p>Diese Seite ist für FF3 und Firebug angepasst, für alle anderen wird firebug-lite geladen.</p>
+			</div>
+			<div id="ft">
+				<p style="float:right">
+				<a title="compuccino Roggenkamp & Cserny GbR" href="http://compuccino.com" target="_blank"><img width="154" height="24" alt="Compuccino" src="http://compuccino.com/sites/default/themes/compuccino/img/logo.png"/></a>
+				</p>
+				<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de/Api">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/api-console">http://wiki.d-api.de/api-console</a>.</p>
+			</div>
 		</div>
 		<script language="javascript">
 			try{ firebug.env.height = 500; } catch(err){}
