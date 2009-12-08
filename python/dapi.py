@@ -30,6 +30,7 @@ from urllib import urlopen, urlencode
 
 
 standardApiUrl = "http://v1.d-api.de"
+standardYqlUrl = "http://query.yahooapis.com/v1/public/yql"
 
 class Client:
 	""" Api Client Klasse für d-api.de
@@ -38,8 +39,9 @@ class Client:
 	user_name=None
 	api_key=None
 	api_url=None
+	yql_url=None
 	
-	def __init__( self, user_name = None, api_key = None, api_url=standardApiUrl ):
+	def __init__( self, user_name = None, api_key = None, api_url=standardApiUrl, yql_url=standardYqlUrl ):
 		"""Initialisiere Klasse
 			@param: string|None username Wenn kein Username und Password übergeben wird, wird automatisch der gast-account verwendet
 			@param: string|None api_key
@@ -49,6 +51,7 @@ class Client:
 		self.user_name = user_name
 		self.api_key = api_key
 		self.api_url = api_url
+		self.yql_url = yql_url
 	
 	def call( self, method = "", params = {} ):
 		"""führe einen Call auf die Api aus
@@ -70,6 +73,26 @@ class Client:
 			logging.warning( "Failure By Fetching %s", ( URL, params, str(e) )  )
 			return False
 	
+	def yql( self, YQL = "", params = {} ):
+		"""führe eine YQL Abfrage über YAHOO aus
+		"""
+		defaultParams = {
+			'format': 'json',
+			'env': self.api_url + "/index/alltables.env",
+			'q': YQL,
+			'diagnostics': 'false'
+		}
+		for k in params: defaultParams[k] = params[k]
+		try:
+			logging.debug( "Fetching YQL-Statement %s", ( YQL, defaultParams )  )
+			content = urlopen( self.yql_url, urlencode( defaultParams ) )
+			response = JSON_decode( content.read() )
+			content.close()
+			return response
+		except Exception, e:
+			logging.warning( "Failure By Fetching %s", ( self.yql_url, defaultParams, str(e) )  )
+			return False
+		
 	def __getattr__( self, name ):
 		if self.__dict__.has_key( name ):
 			return self.__dict__.get( name )
@@ -86,6 +109,10 @@ if __name__ == "__main__":
 	from pprint import pprint
 	logging.getLogger().setLevel( logging.DEBUG )
 	dapi = Client()
+	print "".center(200,"*")
+	print " API-Examples ".center(200,"*")
+	print "".center(200,"*")
+	print ""
 	print " / ".center(200,"*")
 	pprint( dapi.call( '/' ) )
 	print " bundestag.ausschuesse/get?limit=1 ".center(200,"*")
@@ -96,3 +123,13 @@ if __name__ == "__main__":
 	pprint( dapi.bundestag_petition( method='list', limit=10 ) )
 	print " bundestag.wahlkreise/get?limit=5 ".center(200,"*")
 	pprint( dapi.bundestag_wahlkreise( limit=5 ) )
+	
+	print ""
+	print "".center(200,"*")
+	print " YQL-Examples ".center(200,"*")
+	print "".center(200,"*")
+	print ""
+	print " SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1 ".center(200,"*")
+	pprint( dapi.yql('SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1' ) )
+	print " SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4 ".center(200,"*")
+	pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4' ) )

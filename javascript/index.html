@@ -11,12 +11,14 @@
 		</script>
 	</head>	
 	<body>
-		<div id="doc"> </div>
+		<div id="doc">
+			<p>Diese Seite ist für FF3 und Firebug angepasst, für alle anderen wird firebug-lite geladen.</p>
+		</div>
 		<script language="javascript">
 			try{ firebug.env.height = 500; } catch(err){}
 			
 			function line( str, log, i ){
-				var q = "",str=str||"",i=i||200,i=i-str.length,z,z1=Math.round(i/2);
+				var q = "",str=str||"",i=i||150,i=i-str.length,z,z1=Math.round(i/2);
 				for( z=0;z<i;z++)
 					if( i-z == z1 ) q += str;
 					else q += "*";
@@ -26,23 +28,46 @@
 				return line
 			}
 			
-			
-			
-			EXAMPLE_CODE = 'var D_Api = new dapi;\n'+
-			"D_Api.call( '/', function( response ){\n"+
-			"	line('/', response );\n"+
-			"} );\n"+
-			"\n"+
-			"D_Api.call( 'bundestag.ausschuesse/get', function( response ){\n"+
-			"	line(' bundestag.ausschuesse/get?limit=1 ', response );\n"+
-			"}, { \"limit\": 1 } );\n"+
-			"\n"+
-			"D_Api.call( 'bundestag.ausschuesse/list', function( response ){\n"+
-			"	line(' bundestag.ausschuesse/list?limit=10 ', response );\n"+
-			"}, { \"limit\": 10 } );\n";
-			
-			line(' EXAMPLE-CODE ', EXAMPLE_CODE );
-			eval( EXAMPLE_CODE );
+		</script>
+		<script id="example-code" type="text/javascript">
+		// Initialisiere
+		var D_Api = new dapi;
+		
+		// Liste aller Controller
+		D_Api.call( '/', function( response ){
+			line('/', response );
+		} );
+		
+		// Hohle den ersten Bundestagsausschuss
+		D_Api.call( 'bundestag.ausschuesse/get', function( response ){
+			line(' bundestag.ausschuesse/get?limit=1 ', response );
+		}, { "limit": 1 } );
+		
+		// Hohle die ersten 10 Bundestagsausschuss mit den übersichtsinformationen
+		D_Api.call( 'bundestag.ausschuesse/list', function( response ){
+			line(' bundestag.ausschuesse/list?limit=10 ', response );
+		}, { "limit": 10 } );
+		
+		// Hohle die ersten 10 Bundestagsausschuss mit den übersichtsinformationen limit 2,10 ( ab 10 zwei datensätze anzeigen )
+		D_Api.call( 'bundestag.ausschuesse', function( response ){
+			line(' bundestag.ausschuesse?limit=2,10 ', response );
+		}, { "limit": '2,10' } );
+		
+		// Über YQL-Abfragen
+		D_Api.yql( 'SELECT * FROM dapi.bundestag.petition.menschen LIMIT 10', function( response ) {
+			line(' YQL: SELECT * FROM dapi.bundestag.petition.menschen LIMIT 10 ', response );
+		} );
+		
+		// Über YQL-Abfragen und die default Parameter überschreiben, hier bekommen wir ein diagnostic Object der ausgeführten Api-Requests zurück
+		D_Api.yql( 'SELECT id, vornname FROM dapi.bundestag.petition.menschen LIMIT 5', function( response ) {
+			line(' YQL: SELECT id, vornname FROM dapi.bundestag.petition.menschen LIMIT 5 ', response );
+		}, {
+			'diagnostics': 'true'
+		} );
+		</script>
+		<script type="text/javascript">
+			EXAMPLE_CODE = document.getElementById('example-code');
+			line( "EXAMPLE_CODE: ", EXAMPLE_CODE.innerHTML );
 		</script>
 	</body>
 </html>

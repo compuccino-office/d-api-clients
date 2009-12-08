@@ -14,6 +14,7 @@
 
 class DApi {
 	private $api_url = "http://v1.d-api.de";
+	private $yql_url = "http://query.yahooapis.com/v1/public/yql";
 	private $user_name = "";
 	private $api_key = "";
 	private $Useragent = "";
@@ -24,11 +25,13 @@ class DApi {
 	/**
 	* 
 	* @param string $api_url
+	* @param string $yql_url
 	* @param string $user_name
 	* @param string $api_key
 	*/
-	function __construct( $api_url = null, $user_name = null, $api_key = null  ) {
+	function __construct( $api_url = null, $yql_url = null, $user_name = null, $api_key = null  ) {
 		if( null !== $api_url ) $this->api_url = $api_url;
+		if( null !== $yql_url ) $this->yql_url = $yql_url;
 		if( null !== $user_name ) $this->user_name = $user_name;
 		if( null !== $api_key ) $this->api_key = $api_key;
 		$this->Useragent = 'D.Api PHP Client 0.1 beta (curl) ' . phpversion();
@@ -48,6 +51,10 @@ class DApi {
 		}
 		$Url = $this->api_url . $method;
 		
+		return unserialize( utf8_decode( $this->_request( $Url, $parameter ) ) );
+	}
+	
+	private function _request( $Url, $parameter ) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $Url );
 		curl_setopt($ch, CURLOPT_POST, True );
@@ -58,7 +65,7 @@ class DApi {
 		curl_setopt($ch, CURLOPT_TIMEOUT, $this->CURLOPT_TIMEOUT );
 		$result = @curl_exec( $ch );
 		curl_close( $ch );
-		return unserialize( utf8_decode( $result ) );
+		return $result;
 	}
 	
 	function __call( $name, $parameter ) {
@@ -72,12 +79,48 @@ class DApi {
 		return $this->call( $name.$method, $parameter );
 	}
 	
+	/**
+	* 
+	* @param string $yqlStatement
+	* @param array $parameter
+	*/
+	function yql( $yqlStatement="", $parameter=array() ) {
+		$Parameter = array_merge( array(
+			'format' => 'json',
+			'env' => $this->api_url . "/index/alltables.env",
+			'q' => $yqlStatement,
+			'diagnostics' => 'false'
+		), $parameter );
+		return json_decode( $this->_request( $this->yql_url, $Parameter ) );
+	}
+	
 }
 
 
-$dapi = new DApi;
-var_dump( $dapi->call( "/" ) );
-var_dump( $dapi->call( 'bundestag.ausschuesse/get', array( 'limit' => 1 ) ) );
-var_dump( $dapi->call( 'bundestag.ausschuesse/list', array( 'limit' => 10 ) ) );
-var_dump( $dapi->bundestag_petition( array( 'method'=>'list', 'limit' => 10 ) ) );
-var_dump( $dapi->bundestag_wahlkreise( array( 'limit' => 10 ) ) );
+function line( $title, $log = null ) {
+	print "<h1> $title </h1>";
+	if( null !== $log ) {
+		print "<pre style='margin-bottom: 2em; border-bottom: 2px solid #ddd; background: black; color: orange;padding: 0.5em'>";
+		print_r( $log );
+		print "</pre>";
+	}
+	flush();
+}
+
+
+function test() {
+	$dapi = new DApi;
+	line( "YQL - Examples" );
+	line( 'SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1', $dapi->yql( "SELECT * FROM dapi.bundestag.wahlkreise LIMIT 1" ) );
+	line( 'SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4', $dapi->yql( "SELECT id, vorname, nachname, partei FROM dapi.bundestag.mdb.politiker LIMIT 4" ) );
+	
+	line( "API - Examples" );
+	line( '/', $dapi->call( "/" ) );
+	line( 'bundestag.ausschuesse/get?limit=1', $dapi->call( 'bundestag.ausschuesse/get', array( 'limit' => 1 ) ) );
+	line( 'bundestag.ausschuesse/list?limit=10', $dapi->call( 'bundestag.ausschuesse/list', array( 'limit' => 10 ) ) );
+	line( 'bundestag.petition/list?limit=10',  $dapi->bundestag_petition( array( 'method'=>'list', 'limit' => 10 ) ) );
+	line( 'bundestag.wahlkreise/get?limit=10', $dapi->bundestag_wahlkreise( array( 'limit' => 10 ) ) );
+	
+}
+
+test();
