@@ -19,17 +19,19 @@
 			</div>
 			<div id="bd">
 				<p>Diese Seite ist für FF3 und Firebug angepasst, für alle anderen wird firebug-lite geladen.</p>
+				<h2 style="margin-top: 0.3em;border-top: 1px solid #ddd;padding: 0.3em 0;font-size: 120%">Beispiel-Code:</h2>
+				<pre id="code-example-container"></pre>
 			</div>
 			<div id="ft">
-				<p style="float:right">
-				<a title="compuccino Roggenkamp & Cserny GbR" href="http://compuccino.com" target="_blank"><img width="154" height="24" alt="Compuccino" src="http://compuccino.com/sites/default/themes/compuccino/img/logo.png"/></a>
+				<p class="who">
+					<a href="http://wiki.d-api.de/Impressum" title="Deutschland API Impressum" target="_blank">Impressum</a>
+					<a href="http://wiki.d-api.de/Kontakt" title="Deutschland API Kontakt" target="_blank">Kontakt</a>
+					<a title="compuccino Roggenkamp & Cserny GbR" href="http://compuccino.com" target="_blank"><img width="154" height="24" alt="Compuccino" src="http://compuccino.com/sites/default/themes/compuccino/img/logo.png"/></a>
 				</p>
-				<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de/Api">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/api-console">http://wiki.d-api.de/api-console</a>.</p>
+				<p>Für mehr Informationen Siehe <a href="http://wiki.d-api.de" title="Deutchland API Wiki">http://wiki.d-api.de</a>, <a href="http://wiki.d-api.de/Api" title="Deutchland API Wiki Api Erklärung">http://wiki.d-api.de/Api</a>, <a href="http://wiki.d-api.de/Clients" title="Deutchland API Client Blibliotheken">http://wiki.d-api.de/Clients</a>.</p>
 			</div>
 		</div>
 		<script language="javascript">
-			try{ firebug.env.height = 500; } catch(err){}
-			
 			function line( str, log, i ){
 				var q = "",str=str||"",i=i||150,i=i-str.length,z,z1=Math.round(i/2);
 				for( z=0;z<i;z++)
@@ -51,17 +53,17 @@
 			line('/', response );
 		} );
 		
-		// Hohle den ersten Bundestagsausschuss
+		// Hole den ersten Bundestagsausschuss
 		D_Api.call( 'bundestag.ausschuesse/get', function( response ){
 			line(' bundestag.ausschuesse/get?limit=1 ', response );
 		}, { "limit": 1 } );
 		
-		// Hohle die ersten 10 Bundestagsausschuss mit den übersichtsinformationen
+		// Hole die ersten 10 Bundestagsausschuss mit den übersichtsinformationen
 		D_Api.call( 'bundestag.ausschuesse/list', function( response ){
 			line(' bundestag.ausschuesse/list?limit=10 ', response );
 		}, { "limit": 10 } );
 		
-		// Hohle die ersten 10 Bundestagsausschuss mit den übersichtsinformationen limit 2,10 ( ab 10 zwei datensätze anzeigen )
+		// Hole die ersten 10 Bundestagsausschuss mit den übersichtsinformationen limit 2,10 ( ab 10 zwei datensätze anzeigen )
 		D_Api.call( 'bundestag.ausschuesse', function( response ){
 			line(' bundestag.ausschuesse?limit=2,10 ', response );
 		}, { "limit": '2,10' } );
@@ -81,6 +83,7 @@
 		<script type="text/javascript">
 			EXAMPLE_CODE = document.getElementById('example-code');
 			line( "EXAMPLE_CODE: ", EXAMPLE_CODE.innerHTML );
+			document.getElementById('code-example-container').innerHTML = EXAMPLE_CODE.innerHTML;
 		</script>
 	</body>
 </html>

@@ -13,19 +13,23 @@ from urllib import urlopen, urlencode
 	Siehe http://wiki.d-api.de/Api, http://wiki.d-api.de/api-console
 	
 	@package    Utilities d-api
-	@license    
+	@license    http://wiki.d-api.de/Impressum
+	@contact    http://wiki.d-api.de/Kontakt
 	@version    0.1 beta
 	@author grischaandreew
 	@copyright by grischa@compuccino.com, 2009 compuccino.com
 	
 	Bsp:
 		dapi = Client()
+		
 		pprint( dapi.call( '/' ) )# alle methoden auflisten
 		pprint( dapi.call('bundestag.ausschuesse/get', { "limit": 1 } ) )
 		pprint( dapi.call('bundestag.ausschuesse/list', { "limit": 10 } ) )
 		pprint( dapi.bundestag_petition( method='list', limit=10 ) )
 		pprint( dapi.bundestag_wahlkreise( limit=10 ) )
-	
+		
+		pprint( dapi.yql('SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1' ) )
+		pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4' ) )
 """
 
 

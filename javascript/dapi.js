@@ -3,7 +3,8 @@
  * Siehe http://wiki.d-api.de/Api, http://wiki.d-api.de/api-console
  * 
  * @package    Utilities d-api
- * @license    
+ * @license    http://wiki.d-api.de/Impressum
+ * @contact    http://wiki.d-api.de/Kontakt
  * @version    0.1 beta
  * @author grischaandreew
  * @copyright by grischa@compuccino.com, 2009 compuccino.com
@@ -15,51 +16,60 @@ function dapi ( api_url, user_name, api_key, yql_url ) {
 	this.default_parameter = {};
 	this.call_counter = 0;
 	this.yql_url = yql_url || "http://query.yahooapis.com/v1/public/yql";
+	this._cache = {};
 	if( user_name ) this.default_parameter['user_name'] = user_name;
 	if( api_key ) this.default_parameter['api_key'] = api_key;
 	return this;
 }
 
+dapi.prototype.paramize = function( url, obj ) {
+	var q = [],k;
+	for( k in obj ) {
+		if( k.length > 0 && String(obj[k]).length > 0 )
+			q.push( k+"="+obj[k] );
+	}
+	return url + "?" + q.join("&");
+}
 dapi.prototype.urlize = function( method, params ) {
 	if( typeof params != "object" ) return "";
-	var q = [],k;
 	params['output_type'] = "jsonp";
-	for( k in params )
-		q.push( k+"="+params[k] );
-	if( method.slice(0,1) !== "/" ) method = "/"+method;
-	return this.api_url + method + "?" + q.join("&");
+	return this.paramize( this.api_url +"/"+ method, params );
 }
 
-dapi.prototype.yql_urlize = function( yqlStatement, callbackID, params ) {
+dapi.prototype.yql_urlize = function( yqlStatement, params ) {
 	params = params || {};
 	params['output_type'] = "jsonp";
-	params['callback'] = callbackID;
 	params['env'] = this.api_url+"/index/alltables.env";
 	params['q'] = yqlStatement;
 	params['format'] = 'json';
 	if( params['diagnostics'] == undefined )
 		params['diagnostics'] = 'false';
-	var q = [],k;
-	for( k in params )
-		q.push( k+"="+params[k] );
-	return this.yql_url + "?" + q.join("&");
+	return this.paramize( this.yql_url, params );
 }
 
-dapi.prototype.call = function( method, cb, params ) {
-	params = params || {};
-	cb = cb || function(){};
-	params['callback'] = "dapi_callback_"+this.call_counter++;
-	var c = null;
-	window[ params['callback'] ] = function(){
-		document.body.removeChild( c );
-		cb.apply( this, arguments );
+dapi.prototype.request = function( url, cb ) {
+	var cacheId = escape(url);
+	if( this._cache[cacheId] ) {
+		cb.apply( this, this._cache[cacheId] );
+		return this;
+	}
+	var c = null, cid = "dapi_callback_"+this.call_counter++,that=this;
+	url += "&callback="+cid;
+	window[ cid ] = function(){
+		try{ document.body.removeChild( c ); }catch( err ){}
+		that._cache[cacheId] = arguments;
+		cb.apply( that, arguments );
 	};
 	c = document.createElement("script");
 	c.type = "text/javascript";
-	c.onerror = params['callback'];
-	c.src = this.urlize( method, params );
+	c.onerror = window[ cid ];
+	c.src = url;
 	document.body.appendChild( c );
 	return this;
+}
+
+dapi.prototype.call = function( method, cb, params ) {
+	return this.request( this.urlize( method, params || {} ), cb || function(){} );
 }
 /**
  * nulticall call a method with pagination 
@@ -89,17 +99,5 @@ dapi.prototype.multicall = function ( method, cb, params, perPage ) {
 }
 
 dapi.prototype.yql = function( Yql, cb, params ) {
-	cb = cb || function(){};
-	var callback = "dapi_callback_"+this.call_counter++;
-	var c = null;
-	window[ callback ] = function( ) {
-		document.body.removeChild( c );
-		cb.apply( this, arguments );
-	};
-	c = document.createElement("script");
-	c.type = "text/javascript";
-	c.onerror = callback;
-	c.src = this.yql_urlize( Yql, callback, params );
-	document.body.appendChild( c );
-	return this;
+	return this.request( this.yql_urlize( Yql, params ), cb || function(){} );
 }
