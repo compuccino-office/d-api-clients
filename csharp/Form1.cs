@@ -5,11 +5,11 @@
  * @package              client
  * @copyright            Copyright (c) 2009 Compuccino (http://www.compuccino.com)
  * @license
- * @version              $Id$
- * @author               $Author$
- * @LastChangedDate      $LastChangedDate$
- * @LastChangedRevision  $LastChangedRevision$
- * @LastChangedBy        $LastChangedBy$
+ * @version              $Id: Form1.cs 227 2009-12-10 09:23:39Z grischa $
+ * @author               $Author: grischa $
+ * @LastChangedDate      $LastChangedDate: 2009-12-10 10:23:39 +0100 (Do, 10 Dez 2009) $
+ * @LastChangedRevision  $LastChangedRevision: 227 $
+ * @LastChangedBy        $LastChangedBy: grischa $
  */
 
 using System;

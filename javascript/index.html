@@ -54,28 +54,33 @@
 		} );
 		
 		// Hole den ersten Bundestagsausschuss
-		D_Api.call( 'bundestag.ausschuesse/get', function( response ){
-			line(' bundestag.ausschuesse/get?limit=1 ', response );
+		D_Api.call( 'parlament.bund.ausschuesse', function( response ){
+			line(' parlament.bund.ausschuesse?limit=1 ', response );
 		}, { "limit": 1 } );
 		
-		// Hole die ersten 10 Bundestagsausschuss mit den übersichtsinformationen
-		D_Api.call( 'bundestag.ausschuesse/list', function( response ){
-			line(' bundestag.ausschuesse/list?limit=10 ', response );
+		// Hole die ersten 10 Bundestagsausschuss
+		D_Api.call( 'parlament.bund.ausschuesse', function( response ){
+			line(' parlament.bund.ausschuesse?limit=10 ', response );
 		}, { "limit": 10 } );
 		
-		// Hole die ersten 10 Bundestagsausschuss mit den übersichtsinformationen limit 2,10 ( ab 10 zwei datensätze anzeigen )
-		D_Api.call( 'bundestag.ausschuesse', function( response ){
-			line(' bundestag.ausschuesse?limit=2,10 ', response );
+		// Hole 10 Petitionen des Bundestags limit 2,10 ( ab 10 zwei datensätze anzeigen )
+		D_Api.call( 'parlament.bund.petitionen', function( response ){
+			line(' parlament.bund.petitionen?limit=2,10 ', response );
 		}, { "limit": '2,10' } );
 		
+		// Hole die ersten 2 Mdb Politiker des Bundestags
+		D_Api.call( 'parlament.bund.politiker', function( response ){
+			line(' parlament.bund.politiker?limit=2 ', response );
+		}, { "limit": '2' } );
+		
 		// Über YQL-Abfragen
-		D_Api.yql( 'SELECT * FROM d-api.bundestag.petition.menschen LIMIT 10', function( response ) {
-			line(' YQL: SELECT * FROM d-api.bundestag.petition.menschen LIMIT 10 ', response );
+		D_Api.yql( 'SELECT * FROM d-api.parlament.bund.petitionen.menschen LIMIT 10', function( response ) {
+			line(' YQL: SELECT * FROM d-api.parlament.bund.petitionen.menschen LIMIT 10 ', response );
 		} );
 		
 		// Über YQL-Abfragen und die default Parameter überschreiben, hier bekommen wir ein diagnostic Object der ausgeführten Api-Requests zurück
-		D_Api.yql( 'SELECT id, vornname FROM d-api.bundestag.petition.menschen LIMIT 5', function( response ) {
-			line(' YQL: SELECT id, vornname FROM d-api.bundestag.petition.menschen LIMIT 5 ', response );
+		D_Api.yql( 'SELECT id, vornname FROM d-api.parlament.bund.petitionen.menschen LIMIT 5', function( response ) {
+			line(' YQL: SELECT id, vornname FROM d-api.parlament.bund.petitionen.menschen LIMIT 5 ', response );
 		}, {
 			'diagnostics': 'true'
 		} );

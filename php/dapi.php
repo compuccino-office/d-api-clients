@@ -52,7 +52,7 @@ class DApi {
 		}
 		$Url = $this->api_url . $method;
 		
-		return unserialize( utf8_decode( $this->_request( $Url, $parameter ) ) );
+		return unserialize( $this->_request( $Url, $parameter ) );
 	}
 	
 	private function _request( $Url, $parameter ) {
@@ -115,18 +115,19 @@ function line( $title, $log = null, $codeBlock = null ) {
 
 
 function test( ) {
+	@header("Content-Type: text/html;charset=utf-8");
 	#line( "<small>Start Test in File: ".__FILE__." Line: " . __LINE__ . "</small>" );
 	$dapi = new DApi;
 	line( "YQL - Examples" );
-	line( 'SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1', $dapi->yql( "SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1" ), '$dapi->yql( "SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1" );' );
-	line( 'SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4', $dapi->yql( "SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4" ), '$dapi->yql( "SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4" );' );
+	#line( 'Show Tables', $dapi->yql( "Show Tables" ), '$dapi->yql( "Show Tables" );' );
+	line( 'SELECT * FROM d-api.parlament.bund.wahlkreise.ortsdaten LIMIT 1', $dapi->yql( "SELECT * FROM d-api.parlament.bund.wahlkreise.ortsdaten LIMIT 1" ), '$dapi->yql( "SELECT * FROM d-api.bundestag.wahlkreise.ortsdaten LIMIT 1" );' );
+	line( 'SELECT id, vorname, nachname, partei FROM d-api.parlament.bund.politiker LIMIT 4', $dapi->yql( "SELECT id, vorname, nachname, partei FROM d-api.parlament.bund.politiker LIMIT 4" ), '$dapi->yql( "SELECT id, vorname, nachname, partei FROM d-api.parlament.bund.politiker LIMIT 4" );' );
 	
-	line( "API - Examples" );
-	line( '/', $dapi->call( "/" ) );
-	line( 'bundestag.ausschuesse/get?limit=1', $dapi->call( 'bundestag.ausschuesse/get', array( 'limit' => 1 ) ), '$dapi->call( \'bundestag.ausschuesse/get\', array( \'limit\' => 1 ) );' );
-	line( 'bundestag.ausschuesse/list?limit=10', $dapi->call( 'bundestag.ausschuesse/list', array( 'limit' => 10 ) ), '$dapi->call( \'bundestag.ausschuesse/list\', array( \'limit\' => 10 ) );' );
-	line( 'bundestag.petition/list?limit=10',  $dapi->bundestag_petition( array( 'method'=>'list', 'limit' => 10 ) ), '$dapi->bundestag_petition( array( \'method\'=>\'list\', \'limit\' => 10 ) );' );
-	line( 'bundestag.wahlkreise/get?limit=10', $dapi->bundestag_wahlkreise( array( 'limit' => 10 ) ), '$dapi->bundestag_wahlkreise( array( \'limit\' => 10 ) );' );
+	line( "<br/>API - Examples" );
+	line( '/', $dapi->call( "/" ), '$dapi->call( "/" )' );
+	line( 'parlament.bund.ausschuesse?limit=1', $dapi->call( 'parlament.bund.ausschuesse', array( 'limit' => 1 ) ), '$dapi->call( \'parlament.bund.ausschuesse\', array( \'limit\' => 1 ) );' );
+	line( 'parlament.bund.petitionen?limit=5',  $dapi->parlament_bund_petitionen( array( 'limit' => 5 ) ), '$dapi->parlament_bund_petitionen( array( \'limit\' => 5 ) );' );
+	line( 'parlament.bund.wahlkreise.ortsdaten?limit=2,4', $dapi->parlament_bund_wahlkreise_ortsdaten( array( 'limit' => '2,4' ) ), '$dapi->parlament_bund_wahlkreise_ortsdaten( array( \'limit\' => \'2,4\' ) );' );
 	
 }
 

@@ -249,7 +249,7 @@
 				unlog();
 			}
 			if( limit > 10 ) {
-				D_Api.multicall( 'bundestag.mdb.politiker/get', function( response ){
+				D_Api.multicall( 'parlament.bund.politiker', function( response ){
 					if( response.code == 200 && response.data.length >= limit ) {
 						frames = response.data;
 						var i,l=frames.length;
@@ -269,7 +269,7 @@
 					'limit': String( randomer( 1, 500 ) ) + "," + limit
 				}, params ) );
 			} else {
-				D_Api.call( 'bundestag.mdb.politiker/get', function( response ){
+				D_Api.call( 'parlament.bund.politiker', function( response ){
 					if( response.code == 200 && response.data.length >= limit ) {
 						frames = response.data;
 						var i,l=frames.length;
@@ -302,10 +302,11 @@
 			return d;
 		}
 
-		$('#start,#log').click( function(){
-			if( lastStart < (new Date).getTime() - 1000 || $(this).attr('id') !== "log" ) {
+		$('#start,#log').click( function() {
+			if( lastStart < (new Date).getTime() - 2500 || $(this).attr('id') !== "log" ) {
 				__init__( getSettings(), Math.round( parseInt( $('#settings-limit').val() ) / 2 ) );
 			}
+			return false;
 		} );
 		__init__( getSettings(), Math.round( parseInt( $('#settings-limit').val() ) / 2 ) );
 		var lastTimeout = null;

@@ -23,13 +23,12 @@ from urllib import urlopen, urlencode
 		dapi = Client()
 		
 		pprint( dapi.call( '/' ) )# alle methoden auflisten
-		pprint( dapi.call('bundestag.ausschuesse/get', { "limit": 1 } ) )
-		pprint( dapi.call('bundestag.ausschuesse/list', { "limit": 10 } ) )
-		pprint( dapi.bundestag_petition( method='list', limit=10 ) )
-		pprint( dapi.bundestag_wahlkreise( limit=10 ) )
+		pprint( dapi.call('parlament.bund.ausschuesse', { "limit": '2,1' } ) )
+		pprint( dapi.parlament_bund_petitionen( limit=1 ) )
+		pprint( dapi.parlament_bund_wahlkreise_ortsdaten( limit=5 ) )
 		
-		pprint( dapi.yql('SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1' ) )
-		pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4' ) )
+		pprint( dapi.yql('SELECT * FROM d-api.parlament.bund.wahlkreise.ortsdaten LIMIT 1' ) )
+		pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM d-api.parlament.bund.politiker LIMIT 4' ) )
 """
 
 
@@ -119,21 +118,19 @@ if __name__ == "__main__":
 	print ""
 	print " / ".center(200,"*")
 	pprint( dapi.call( '/' ) )
-	print " bundestag.ausschuesse/get?limit=1 ".center(200,"*")
-	pprint( dapi.call('bundestag.ausschuesse/get', { "limit": 1 } ) )
-	print " bundestag.ausschuesse/get?limit=10 ".center(200,"*")
-	pprint( dapi.call('bundestag.ausschuesse/list', { "limit": 10 } ) )
-	print " bundestag.petition/list?limit=10 ".center(200,"*")
-	pprint( dapi.bundestag_petition( method='list', limit=10 ) )
-	print " bundestag.wahlkreise/get?limit=5 ".center(200,"*")
-	pprint( dapi.bundestag_wahlkreise( limit=5 ) )
+	print " parlament.bund.ausschuesse?limit=2,1 ".center(200,"*")
+	pprint( dapi.call('parlament.bund.ausschuesse', { "limit": '2,1' } ) )
+	print " parlament.bund.petitionen?limit=1 ".center(200,"*")
+	pprint( dapi.parlament_bund_petitionen( limit=1 ) )
+	print " parlament.bund.wahlkreise.ortsdaten?limit=5 ".center(200,"*")
+	pprint( dapi.parlament_bund_wahlkreise_ortsdaten( limit=5 ) )
 	
 	print ""
 	print "".center(200,"*")
 	print " YQL-Examples ".center(200,"*")
 	print "".center(200,"*")
 	print ""
-	print " SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1 ".center(200,"*")
-	pprint( dapi.yql('SELECT * FROM d-api.bundestag.wahlkreise LIMIT 1' ) )
-	print " SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4 ".center(200,"*")
-	pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM d-api.bundestag.mdb.politiker LIMIT 4' ) )
+	print " SELECT * FROM d-api.parlament.bund.wahlkreise.ortsdaten LIMIT 1 ".center(200,"*")
+	pprint( dapi.yql('SELECT * FROM d-api.parlament.bund.wahlkreise.ortsdaten LIMIT 1' ) )
+	print " SELECT id, vorname, nachname, partei FROM d-api.parlament.bund.politiker LIMIT 4 ".center(200,"*")
+	pprint( dapi.yql('SELECT id, vorname, nachname, partei FROM d-api.parlament.bund.politiker LIMIT 4' ) )
