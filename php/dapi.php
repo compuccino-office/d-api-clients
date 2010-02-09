@@ -8,7 +8,7 @@
  * @contact    http://wiki.d-api.de/Kontakt
  * @version    0.1 beta
  * @author grischaandreew
- * @copyright by grischa@compuccino.com, 2009 compuccino.com
+ * @copyright by grischa@compuccino.com, 2009-2010 compuccino.com
  * 
  */
 
@@ -16,7 +16,7 @@
 class DApi {
 	private $api_url = "http://v1.d-api.de";
 	private $yql_url = "http://query.yahooapis.com/v1/public/yql";
-	private $user_name = "";
+	private $api_user = "";
 	private $api_key = "";
 	private $Useragent = "";
 	public $CURLOPT_CONNECTTIMEOUT = 10;
@@ -33,7 +33,7 @@ class DApi {
 	function __construct( $api_url = null, $yql_url = null, $user_name = null, $api_key = null  ) {
 		if( null !== $api_url ) $this->api_url = $api_url;
 		if( null !== $yql_url ) $this->yql_url = $yql_url;
-		if( null !== $user_name ) $this->user_name = $user_name;
+		if( null !== $api_user ) $this->api_user = $api_user;
 		if( null !== $api_key ) $this->api_key = $api_key;
 		$this->Useragent = 'D.Api PHP Client 0.1 beta (curl) ' . phpversion();
 	}
@@ -44,7 +44,7 @@ class DApi {
 	* @param array $parameter
 	*/
 	function call ( $method = "/", $parameter = array() ) {
-		if( null != $this->user_name ) $parameter['user_name'] = $this->user_name;
+		if( null != $this->api_user ) $parameter['api_user'] = $this->api_user;
 		if( null != $this->api_key ) $parameter['api_key'] = $this->api_key;
 		$parameter['output_type'] = "phpserialize";
 		if( substr( $method, 0, 1 ) !== "/" ) {

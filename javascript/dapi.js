@@ -7,17 +7,17 @@
  * @contact    http://wiki.d-api.de/Kontakt
  * @version    0.1 beta
  * @author grischaandreew
- * @copyright by grischa@compuccino.com, 2009 compuccino.com
+ * @copyright by grischa@compuccino.com, 2009-2010 compuccino.com
  * 
  */
 
-function dapi ( api_url, user_name, api_key, yql_url ) {
+function dapi ( api_url, api_user, api_key, yql_url ) {
 	this.api_url = api_url || "http://v1.d-api.de";
 	this.default_parameter = {};
 	this.call_counter = 0;
 	this.yql_url = yql_url || "http://query.yahooapis.com/v1/public/yql";
 	this._cache = {};
-	if( user_name ) this.default_parameter['user_name'] = user_name;
+	if( api_user ) this.default_parameter['api_user'] = api_user;
 	if( api_key ) this.default_parameter['api_key'] = api_key;
 	return this;
 }

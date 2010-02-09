@@ -17,7 +17,7 @@ from urllib import urlopen, urlencode
 	@contact    http://wiki.d-api.de/Kontakt
 	@version    0.1 beta
 	@author grischaandreew
-	@copyright by grischa@compuccino.com, 2009 compuccino.com
+	@copyright by grischa@compuccino.com, 2009-2010 compuccino.com
 	
 	Bsp:
 		dapi = Client()
@@ -44,7 +44,7 @@ class Client:
 	api_url=None
 	yql_url=None
 	
-	def __init__( self, user_name = None, api_key = None, api_url=standardApiUrl, yql_url=standardYqlUrl ):
+	def __init__( self, api_user = None, api_key = None, api_url=standardApiUrl, yql_url=standardYqlUrl ):
 		"""Initialisiere Klasse
 			@param: string|None username Wenn kein Username und Password übergeben wird, wird automatisch der gast-account verwendet
 			@param: string|None api_key
@@ -59,7 +59,7 @@ class Client:
 	def call( self, method = "", params = {} ):
 		"""führe einen Call auf die Api aus
 		"""
-		if self.user_name is not None: params['user_name'] = self.user_name
+		if self.api_user is not None: params['api_user'] = self.api_user
 		if self.api_key is not None: params['api_key'] = self.api_key
 		params['output_type'] = "json"
 		if method.startswith('/') is False:
